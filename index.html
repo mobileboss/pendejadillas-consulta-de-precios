@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consulta de Precios  Para Pendejadillas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Consulta de Precios</h1>
+    
+    <!-- Campo de búsqueda -->
+    <div class="search-box">
+      <input type="text" id="productName" placeholder="Ingresa el nombre del producto" />
+      <button id="searchButton">Buscar</button>
+    </div>
+    
+    <!-- Resultados de búsqueda -->
+    <div id="results" class="results">
+      <h2>Resultados:</h2>
+      <p id="priceMessage"></p>
+      <ul id="similarProductsList"></ul>
+    </div>
+
+    <!-- Consejos de ventas -->
+    <div id="salesTips" class="sales-tips">
+      <h2>Consejos de Venta:</h2>
+      <p id="tipsMessage"></p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
