@@ -18,8 +18,8 @@ document.getElementById('searchButton').addEventListener('click', async () => {
   const data = await response.json();
 
   // Mostrar el precio del producto y productos similares
-  if (data.message) {
-    document.getElementById('priceMessage').textContent = data.message;
+  if (data.respuesta) { // "respuesta" es la clave en la API
+  document.getElementById('priceMessage').textContent = data.respuesta;
 
     const similarProductsList = document.getElementById('similarProductsList');
     similarProductsList.innerHTML = '';
