@@ -5,7 +5,7 @@ import os
 import difflib  # Para buscar nombres similares
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)  # Asegura que CORS funcione correctamente
 
 # Carga la base de datos de productos
 try:
@@ -16,42 +16,50 @@ except Exception as e:
 
 @app.route("/", methods=["GET"])
 def home():
-    return "API funcionando correctamente. Usa /consulta para obtener precios."
+    return jsonify({"mensaje": "API funcionando correctamente. Usa /consulta para obtener precios."})
 
 @app.route("/consulta", methods=["POST"])
 def consulta():
-    data = request.get_json()
-    producto = data.get("producto", "").lower()
-    
-    # Filtra el producto exacto
-    resultado = productos[productos["Nombre del Producto"].str.lower() == producto]
+    try:
+        data = request.get_json()
+        if not data or "producto" not in data:
+            return jsonify({"error": "El parámetro 'producto' es obligatorio"}), 400
 
-    if resultado.empty:
-        # Si no se encuentra exactamente, buscar productos similares
-        nombres_productos = productos["Nombre del Producto"].str.lower().tolist()
-        similares = difflib.get_close_matches(producto, nombres_productos, n=3, cutoff=0.3)  # n=3 busca hasta 3 similares
+        producto = data["producto"].strip().lower()
 
-        productos_similares = []
-        for nombre in similares:
-            similar_data = productos[productos["Nombre del Producto"].str.lower() == nombre].iloc[0]
-            productos_similares.append({
-                "productName": similar_data["Nombre del Producto"],
-                "price": f"${similar_data['Precio']}",
-                "image": similar_data["URL Imagen"]
+        # Filtra el producto exacto
+        resultado = productos[productos["Nombre del Producto"].str.lower() == producto]
+
+        if resultado.empty:
+            # Si no se encuentra exactamente, buscar productos similares
+            nombres_productos = productos["Nombre del Producto"].str.lower().tolist()
+            similares = difflib.get_close_matches(producto, nombres_productos, n=3, cutoff=0.3)  # Busca hasta 3 similares
+
+            productos_similares = []
+            for nombre in similares:
+                similar_data = productos[productos["Nombre del Producto"].str.lower() == nombre].iloc[0]
+                productos_similares.append({
+                    "productName": similar_data["Nombre del Producto"],
+                    "price": f"${similar_data['Precio']}",
+                    "image": similar_data["URL Imagen"]
+                })
+
+            return jsonify({
+                "respuesta": "Producto no encontrado.",
+                "imagen": "",
+                "similarProducts": productos_similares
             })
 
+        respuesta = resultado.iloc[0]
         return jsonify({
-            "respuesta": "Producto no encontrado.",
-            "imagen": "",
-            "similarProducts": productos_similares
+            "respuesta": f"El precio de {respuesta['Nombre del Producto']} es ${respuesta['Precio']}.",
+            "imagen": respuesta["URL Imagen"],
+            "similarProducts": []  # Si encontró el producto exacto, no devuelve similares
         })
 
-    respuesta = resultado.iloc[0]
-    return jsonify({
-        "respuesta": f"El precio de {respuesta['Nombre del Producto']} es ${respuesta['Precio']}.",
-        "imagen": respuesta["URL Imagen"],
-        "similarProducts": []  # Si encontró el producto exacto, no devuelve similares
-    })
+    except Exception as e:
+        print(f"Error en /consulta: {e}")
+        return jsonify({"error": "Error interno del servidor"}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
