@@ -8,12 +8,13 @@ document.getElementById('searchButton').addEventListener('click', async () => {
 
   // Llamada al servidor para obtener el precio del producto
   const response = await fetch("https://pendejadillas-consulta-de-precios.onrender.com/consulta", {
-  method: 'POST',
+  method: 'POST',  // ✅ Asegurar que es un POST
   headers: {
     'Content-Type': 'application/json',
   },
-  body: JSON.stringify({ producto: productName }) // Asegúrate de que la clave coincida con la API
+  body: JSON.stringify({ producto: productName }) // ✅ La clave debe ser "producto"
 });
+
 
   const data = await response.json();
 
