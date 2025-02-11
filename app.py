@@ -9,9 +9,11 @@ CORS(app, supports_credentials=True)  # Asegura que CORS funcione correctamente
 
 # Carga la base de datos de productos
 try:
-    productos = pd.read_csv("productos.csv")
+    productos = pd.read_csv("productos.csv", encoding="utf-8")  # Agrega encoding para evitar problemas con caracteres especiales
+    if productos.empty:
+        print("⚠️ Advertencia: El archivo productos.csv está vacío.")
 except Exception as e:
-    print(f"Error al cargar productos.csv: {e}")
+    print(f"❌ Error al cargar productos.csv: {e}")
     productos = pd.DataFrame(columns=["Nombre del Producto", "Precio", "URL Imagen"])
 
 @app.route("/", methods=["GET"])
@@ -58,7 +60,7 @@ def consulta():
         })
 
     except Exception as e:
-        print(f"Error en /consulta: {e}")
+        print(f"❌ Error en /consulta: {e}")
         return jsonify({"error": "Error interno del servidor"}), 500
 
 if __name__ == "__main__":
