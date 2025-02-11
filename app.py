@@ -33,30 +33,13 @@ def consulta():
         resultado = productos[productos["Nombre del Producto"].str.lower() == producto]
 
         if resultado.empty:
-            # Si no se encuentra exactamente, buscar productos similares
-            nombres_productos = productos["Nombre del Producto"].str.lower().tolist()
-            similares = difflib.get_close_matches(producto, nombres_productos, n=3, cutoff=0.3)  # Busca hasta 3 similares
-
-            productos_similares = []
-            for nombre in similares:
-                similar_data = productos[productos["Nombre del Producto"].str.lower() == nombre].iloc[0]
-                productos_similares.append({
-                    "productName": similar_data["Nombre del Producto"],
-                    "price": f"${similar_data['Precio']}",
-                    "image": similar_data["URL Imagen"]
-                })
-
-            return jsonify({
-                "respuesta": "Producto no encontrado.",
-                "imagen": "",
-                "similarProducts": productos_similares
-            })
+            return jsonify({"respuesta": "Producto no encontrado.", "similarProducts": []})
 
         respuesta = resultado.iloc[0]
         return jsonify({
             "respuesta": f"El precio de {respuesta['Nombre del Producto']} es ${respuesta['Precio']}.",
             "imagen": respuesta["URL Imagen"],
-            "similarProducts": []  # Si encontró el producto exacto, no devuelve similares
+            "similarProducts": []
         })
 
     except Exception as e:
