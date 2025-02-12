@@ -2,16 +2,13 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pandas as pd
 import os
-import difflib  # Para buscar nombres similares
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)  # Asegura que CORS funcione correctamente
+CORS(app)
 
 # Carga la base de datos de productos
 try:
-    productos = pd.read_csv("productos.csv", encoding="utf-8")  # Agrega encoding para evitar problemas con caracteres especiales
-    if productos.empty:
-        print("⚠️ Advertencia: El archivo productos.csv está vacío.")
+    productos = pd.read_csv("productos.csv", encoding="utf-8")
 except Exception as e:
     print(f"❌ Error al cargar productos.csv: {e}")
     productos = pd.DataFrame(columns=["Nombre del Producto", "Precio", "URL Imagen"])
