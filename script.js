@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         try {
-            const response = await fetch("https://pendejadillas-consulta-de-precios.onrender.com/consulta", {
+            const response = await fetch("http://192.168.1.254/consulta", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ producto: productName })
