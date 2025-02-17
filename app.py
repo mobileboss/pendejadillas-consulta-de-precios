@@ -6,6 +6,8 @@ import difflib  # Para buscar nombres similares
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "*"}})
+
 
 # Carga la base de datos de productos
 try:
