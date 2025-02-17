@@ -1,50 +1,60 @@
-document.getElementById('searchButton').addEventListener('click', async () => {
-  const productName = document.getElementById('productName').value.trim();
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("📌 DOM Cargado correctamente");
 
-  if (!productName) {
-    alert("Por favor, ingresa el nombre de un producto.");
-    return;
-  }
+    document.getElementById('searchButton').addEventListener('click', async () => {
+        const productName = document.getElementById('productName').value.trim();
+        if (!productName) {
+            alert("Por favor, ingresa el nombre de un producto.");
+            return;
+        }
 
-  // Llamada al servidor para obtener el precio del producto
-  const response = await fetch("https://pendejadillas-consulta-de-precios.onrender.com/consulta", {
-  method: 'POST',  // ✅ Asegurar que es un POST
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({ producto: productName }) // ✅ La clave debe ser "producto"
-});
+        try {
+            const response = await fetch("https://pendejadillas-consulta-de-precios.onrender.com/consulta", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ producto: productName })
+            });
 
+            const data = await response.json();
+            console.log("📌 Respuesta de la API:", data);
 
-  const data = await response.json();
+            if (!response.ok) {
+                document.getElementById('priceMessage').textContent = "Error: " + (data.error || "No se pudo obtener la información.");
+                return;
+            }
 
-  // Mostrar el precio del producto y productos similares
-  if (data.respuesta) { // "respuesta" es la clave en la API
-  document.getElementById('priceMessage').textContent = data.respuesta;
+            // ✅ Mostrar el precio
+            document.getElementById('priceMessage').textContent = data.respuesta;
 
-    const similarProductsList = document.getElementById('similarProductsList');
-    similarProductsList.innerHTML = '';
-    
-    data.similarProducts.forEach(product => {
-      const li = document.createElement('li');
-      li.textContent = `${product.productName}: ${product.price}`;
-      similarProductsList.appendChild(li);
+            // ✅ Mostrar la imagen del producto
+            const imgElement = document.getElementById('productImage');
+            if (data.imagen) {
+                imgElement.src = data.imagen;
+                imgElement.style.display = "block";
+            } else {
+                imgElement.style.display = "none";
+            }
+
+            // ✅ Mostrar productos similares correctamente
+            const similarProductsContainer = document.getElementById('similarProductsContainer');
+            const similarProductsList = document.getElementById('similarProductsList');
+            similarProductsList.innerHTML = '';
+
+            if (data.similarProducts && data.similarProducts.length > 0) {
+                similarProductsContainer.classList.remove('hidden');
+                data.similarProducts.forEach(product => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${product["Nombre del Producto"]}</strong>: $${product["Precio"]}`;
+                    similarProductsList.appendChild(li);
+                });
+            } else {
+                similarProductsContainer.classList.add('hidden');
+            }
+
+        } catch (error) {
+            console.error("❌ Error al conectar con el servidor:", error);
+            document.getElementById('priceMessage').textContent = "Error al conectar con el servidor.";
+        }
     });
-  }
 
-  // Llamada a OpenAI para obtener los consejos de venta
-  const salesTipsResponse = await fetch('http://localhost:3000/ask-openai', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ 
-      question: "¿Cómo puedo vender más rápido este producto?", 
-      productName: productName 
-    })
-  });
-
-  const salesTipsData = await salesTipsResponse.json();
-  
-  document.getElementById('tipsMessage').textContent = salesTipsData.message;
-});
+});  // 🔥 Este `});` debe estar aquí al final del archivo

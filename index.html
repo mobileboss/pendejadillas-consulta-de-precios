@@ -1,35 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consulta de Precios  Para Pendejadillas</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Precios</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="container">
-    <h1>Consulta de Precios</h1>
-    
-    <!-- Campo de búsqueda -->
-    <div class="search-box">
-      <input type="text" id="productName" placeholder="Ingresa el nombre del producto" />
-      <button id="searchButton">Buscar</button>
-    </div>
-    
-    <!-- Resultados de búsqueda -->
-    <div id="results" class="results">
-      <h2>Resultados:</h2>
-      <p id="priceMessage"></p>
-      <ul id="similarProductsList"></ul>
-    </div>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+        <h1 class="text-2xl font-bold mb-4">Consulta de Precios</h1>
+        
+        <!-- Input de búsqueda -->
+        <input type="text" id="productName" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Ingrese el nombre del producto">
+        <button id="searchButton" class="mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Buscar</button>
+        
+        <!-- Mensaje del precio -->
+        <p id="priceMessage" class="mt-4 text-lg font-semibold"></p>
 
-    <!-- Consejos de ventas -->
-    <div id="salesTips" class="sales-tips">
-      <h2>Consejos de Venta:</h2>
-      <p id="tipsMessage"></p>
+        <!-- Imagen del producto -->
+        <img id="productImage" class="mt-4 hidden w-40 mx-auto" alt="Imagen del producto">
+        
+        <!-- 🟢 AGREGADO: Mensaje de promoción -->
+        <p id="promotionMessage" class="mt-2 text-green-600 font-semibold"></p>
+        
+        <!-- Productos similares -->
+        <div id="similarProductsContainer" class="mt-4 hidden">
+            <h2 class="text-lg font-bold">Productos Similares:</h2>
+            <ul id="similarProductsList" class="text-left text-gray-700"></ul>
+        </div>
     </div>
-  </div>
-
-  <script src="script.js"></script>
+    
+    <script src="script.js"></script>
 </body>
 </html>
+

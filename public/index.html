@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consulta de Precios  Para Pendejadillas</title>
+  <title>Consulta de Precios Para Pendejadillas</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -20,7 +20,19 @@
     <div id="results" class="results">
       <h2>Resultados:</h2>
       <p id="priceMessage"></p>
-      <ul id="similarProductsList"></ul>
+
+      <!-- Contenedor de la imagen -->
+      <div id="imageContainer" class="hidden">
+        <img id="productImage" src="" alt="Imagen del Producto" style="max-width: 200px; display: none;">
+      </div>
+
+      <p id="promotionMessage"></p>
+
+      <!-- Lista de productos similares -->
+      <div id="similarProductsContainer" class="hidden">
+        <h3>Productos Similares:</h3>
+        <ul id="similarProductsList"></ul>
+      </div>
     </div>
 
     <!-- Consejos de ventas -->
