@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         try {
-            const response = await fetch("http://192.168.1.254/consulta", {
+            const response = await fetch("http://192.168.137.1/consulta", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ producto: productName })
