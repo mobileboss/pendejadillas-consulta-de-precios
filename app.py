@@ -3,17 +3,29 @@ from flask_cors import CORS
 import pandas as pd
 import os
 import difflib  # Para buscar nombres similares
+import sys  # Importamos sys para forzar la impresión de logs
+
+# Función para forzar la impresión de logs en tiempo real
+def log(message):
+    print(message)
+    sys.stdout.flush()  # 🔥 Esto hace que Render imprima el mensaje inmediatamente
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
-CORS(app, resources={r"/*": {"origins": "*"}})
 
+# ✅ Verificar si el archivo productos.csv está en el servidor
+if os.path.exists("productos.csv"):
+    log("✅ El archivo productos.csv está en el servidor.")
+else:
+    log("❌ ERROR: El archivo productos.csv NO está en el servidor.")
 
-# Carga la base de datos de productos
+# ✅ Cargar la base de datos de productos correctamente
 try:
-    productos = pd.read_csv("productos.csv")
+    productos = pd.read_csv("productos.csv", encoding="utf-8")
+    productos.columns = productos.columns.str.strip()  # 🔥 Elimina espacios extra en los nombres de columna
+    log("📌 Columnas detectadas en el CSV: " + str(productos.columns.tolist()))
 except Exception as e:
-    print(f"Error al cargar productos.csv: {e}")
+    log(f"❌ ERROR al cargar productos.csv: {e}")
     productos = pd.DataFrame(columns=["Nombre del Producto", "Precio", "URL Imagen", "Promocion"])
 
 @app.route("/", methods=["GET"])
@@ -47,6 +59,10 @@ def consulta():
             })
 
         respuesta = resultado.iloc[0]
+        
+        # 🔥 Depurar para verificar la promoción
+        log("📌 Producto encontrado: " + str(respuesta.to_dict()))
+        log("📌 Valor de 'Promocion': " + str(respuesta["Promocion"]))
 
         # Obtener productos similares
         similares = difflib.get_close_matches(producto, productos["Nombre del Producto"].str.lower().tolist(), n=3, cutoff=0.3)
@@ -63,7 +79,7 @@ def consulta():
         })
 
     except Exception as e:
-        print(f"❌ Error en /consulta: {e}")
+        log(f"❌ Error en /consulta: {e}")
         return jsonify({"error": "Error interno del servidor"}), 500
 
 if __name__ == "__main__":

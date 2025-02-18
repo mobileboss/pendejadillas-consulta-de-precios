@@ -52,6 +52,16 @@ document.addEventListener("DOMContentLoaded", function() {
                 similarProductsContainer.classList.add('hidden');
             }
 
+            // ✅ Mostrar la promoción si está disponible
+const promotionMessage = document.getElementById('promotionMessage');
+if (data.promocion) {
+    promotionMessage.innerHTML = `🔥 <strong>Promoción:</strong> ${data.promocion}`;
+    promotionMessage.style.display = "block";
+} else {
+    promotionMessage.style.display = "none";
+}
+
+
         } catch (error) {
             console.error("❌ Error al conectar con el servidor:", error);
             document.getElementById('priceMessage').textContent = "Error al conectar con el servidor.";
