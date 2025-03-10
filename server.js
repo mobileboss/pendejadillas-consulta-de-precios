@@ -1,117 +1,185 @@
-const path = require('path');
-const { google } = require('googleapis');
-const Fuse = require('fuse.js'); // Para búsqueda difusa
-const axios = require('axios');
-const express = require('express');
-const cors = require('cors');
+const express = require("express");
+const multer = require("multer");
+const path = require("path");
+const { google } = require("googleapis");
+const fs = require("fs");
+const cors = require("cors");
 const app = express();
-const port = 3000;
-
-// Configuración del servidor
+const port = 3001;
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static("public"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Variables globales
-const CREDENTIALS_PATH = path.join(__dirname, 'pendejadillas-64b51618122f.json');
-const OPENAI_API_KEY = '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';
-const SPREADSHEET_ID = '1XP0wJvNCTf2uaCAoFHPZUPKnVbpj2M2ooX9eKbJZAqU';
-const RANGE = "'lista De precios'!A2:C";
-const DEFAULT_IMAGE = 'https://via.placeholder.com/150'; // Imagen de respaldo
+// Configuración de almacenamiento de imágenes
+const storage = multer.diskStorage({
+    destination: "uploads/",
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    },
+});
+const upload = multer({ storage }).array("images", 3);
 
-// Autenticación con Google Sheets
+// Configuración de Google Sheets
+const SPREADSHEET_ID = "1rLH1BqVhuetmlUcvWJEZwLUTUXtxbGkL6_vY7CdECQ8";
+
 async function authenticate() {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: CREDENTIALS_PATH,
-    scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
-  });
-
-  return auth.getClient();
-}
-
-// Validar URL
-function isValidUrl(string) {
-  try {
-    new URL(string);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-// Obtener productos de Google Sheets
-async function getPricesFromSheet() {
-  try {
-    const authClient = await authenticate();
-    const sheets = google.sheets({ version: 'v4', auth: authClient });
-
-    console.log('Intentando obtener datos de Google Sheets...');
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
-      range: RANGE,
+    const auth = new google.auth.GoogleAuth({
+        keyFile: "credentials.json",
+        scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
-
-    console.log('Datos obtenidos de Google Sheets:', response.data);
-    const rows = response.data.values;
-    const products = [];
-
-    if (rows.length) {
-      rows.forEach((row) => {
-        const productName = row[0]?.toLowerCase() || '';
-        const price = row[1] || 'Precio no disponible';
-        const imageUrl = isValidUrl(row[2]) ? row[2] : DEFAULT_IMAGE; // Validar URL
-        products.push({ productName, price, imageUrl });
-      });
-    } else {
-      console.log('No se encontraron productos en la hoja de Google Sheets.');
-    }
-
-    return products;
-  } catch (error) {
-    console.error('Error al obtener los precios desde Google Sheets:', error);
-    throw new Error('Error al obtener los precios desde Google Sheets');
-  }
+    return auth.getClient();
 }
 
-// Ruta para obtener precios y productos similares
-app.post('/get-price', async (req, res) => {
-  const productName = req.body.productName.toLowerCase();
+// Endpoint para obtener precio (Búsqueda por nombre o código SKU)
+app.post("/get-price", async (req, res) => {
+    try {
+        const { productName, productCode } = req.body;
 
-  try {
-    const products = await getPricesFromSheet();
+        if (!productName && !productCode) {
+            return res.status(400).json({ message: "Debes proporcionar el nombre o el código del producto." });
+        }
 
-    // Búsqueda difusa
-    const fuse = new Fuse(products, {
-      keys: ['productName'],
-      threshold: 0.3,
-    });
+        const authClient = await authenticate();
+        const sheets = google.sheets({ version: "v4", auth: authClient });
 
-    const results = fuse.search(productName);
-    const similarProducts = results.slice(0, 3).map((result) => result.item);
+        const { data } = await sheets.spreadsheets.values.get({
+            spreadsheetId: SPREADSHEET_ID,
+            range: "Productos!A2:F", // Asegúrate de que el rango sea correcto
+        });
 
-    // Buscar el producto principal
-    const mainProduct = similarProducts.find((product) => product.productName === productName);
+        const rows = data.values || [];
+        let producto = null;
 
-    if (mainProduct) {
-      res.json({
-        message: `El precio de ${mainProduct.productName} es ${mainProduct.price}.`,
-        similarProducts: similarProducts,
-        imageUrl: mainProduct.imageUrl || DEFAULT_IMAGE,
-      });
-    } else {
-      res.json({
-        message: "Lo siento, no pude encontrar ese producto.",
-        similarProducts: [],
-        imageUrl: DEFAULT_IMAGE,
-      });
+        for (const row of rows) {
+            const [nombre, precio, imageUrl, promocion, codigoBarras, sku] = row;
+
+            // Normalizar SKU (eliminar espacios y convertir a minúsculas)
+            const skuNormalizado = sku ? sku.trim().toLowerCase() : "";
+            const productCodeNormalizado = productCode ? productCode.trim().toLowerCase() : "";
+
+            if (
+                (productName && nombre.toLowerCase().trim() === productName.toLowerCase().trim()) ||
+                (productCode && skuNormalizado === productCodeNormalizado)
+            ) {
+                producto = { nombre, precio, imageUrl, promocion };
+                break;
+            }
+        }
+
+        if (!producto) {
+            return res.status(404).json({ message: "Producto no encontrado" });
+        }
+
+        res.json({
+            message: `✅ Producto encontrado: ${producto.nombre}`,
+            productName: producto.nombre,
+            price: producto.precio,
+            imageUrl: producto.imageUrl,
+            promotion: producto.promocion || "Sin promoción",
+        });
+
+    } catch (error) {
+        console.error("❌ Error en /get-price:", error);
+        res.status(500).json({ message: "Error al obtener precio." });
     }
-  } catch (error) {
-    console.error('Error al obtener los precios de Google Sheets:', error);
-    res.status(500).json({ message: 'Error al obtener los precios desde Google Sheets.' });
-  }
 });
 
-// Inicia el servidor
+// Endpoint para registrar venta
+app.post("/register-sale", upload, async (req, res) => {
+    try {
+        const { vendedorId, locationId, items } = req.body;
+
+        if (!vendedorId || !locationId || !items) {
+            return res.status(400).json({ message: "Datos incompletos en la solicitud" });
+        }
+
+        const productos = JSON.parse(items);
+        const fechaVenta = new Date().toISOString();
+        const imageUrls = (req.files || []).map(file => `http://localhost:${port}/uploads/${file.filename}`);
+
+        const authClient = await authenticate();
+        const sheets = google.sheets({ version: "v4", auth: authClient });
+
+        const values = productos.map(item => [
+            fechaVenta,
+            vendedorId,
+            locationId,
+            item.productName,
+            item.quantity,
+            item.price,
+            item.quantity * item.price,
+            imageUrls.length ? imageUrls.join(", ") : "Sin imagen"
+        ]);
+
+        await sheets.spreadsheets.values.append({
+            spreadsheetId: SPREADSHEET_ID,
+            range: "Ventas!A:H",
+            valueInputOption: "USER_ENTERED",
+            requestBody: { values }
+        });
+
+        res.json({ message: "Venta registrada con éxito", success: true, imageUrls });
+
+    } catch (error) {
+        console.error("❌ Error al registrar la venta:", error);
+        res.status(500).json({ message: "Error al registrar la venta." });
+    }
+});
+
+// Endpoint para registrar inventario por escaneo
+app.post("/register-inventory", async (req, res) => {
+    try {
+        const { vendedorId, locationId, productCode, quantity } = req.body;
+
+        if (!vendedorId || !locationId || !productCode || !quantity) {
+            return res.status(400).json({ message: "Datos incompletos para registrar inventario" });
+        }
+
+        const authClient = await authenticate();
+        const sheets = google.sheets({ version: "v4", auth: authClient });
+
+        const { data } = await sheets.spreadsheets.values.get({
+            spreadsheetId: SPREADSHEET_ID,
+            range: "Productos!A2:F",
+        });
+
+        const rows = data.values || [];
+        let producto = null;
+
+        for (const row of rows) {
+            const [nombre, precio, imageUrl, promocion, codigoBarras, sku] = row;
+            if (sku === productCode) {
+                producto = { nombre, precio };
+                break;
+            }
+        }
+
+        if (!producto) {
+            return res.status(404).json({ message: "Producto no encontrado en catálogo" });
+        }
+
+        const fechaRegistro = new Date().toISOString();
+
+        await sheets.spreadsheets.values.append({
+            spreadsheetId: SPREADSHEET_ID,
+            range: "Inventarios!A:F",
+            valueInputOption: "USER_ENTERED",
+            requestBody: {
+                values: [
+                    [fechaRegistro, vendedorId, locationId, producto.nombre, productCode, quantity]
+                ]
+            }
+        });
+
+        res.json({ message: "Inventario registrado correctamente", product: producto.nombre });
+
+    } catch (error) {
+        console.error("❌ Error en /register-inventory:", error);
+        res.status(500).json({ message: "Error al registrar inventario." });
+    }
+});
+
 app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+    console.log(`🚀 Servidor corriendo en http://localhost:${port}`);
 });
