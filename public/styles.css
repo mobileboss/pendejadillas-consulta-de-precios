@@ -1,0 +1,87 @@
+/* Estilos Generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Contenedor Principal */
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+/* Logo */
+.logo {
+    width: 100px;
+    height: auto;
+    margin: 10px auto;
+    display: block;
+}
+
+/* Botones */
+button {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.confirm-btn { background: linear-gradient(to right, #ff416c, #ff4b2b); }
+.search-btn { background: linear-gradient(to right, #ff9966, #ff5e62); }
+.add-btn { background: linear-gradient(to right, #36d1dc, #5b86e5); }
+.register-btn { background: linear-gradient(to right, #ff758c, #ff7eb3); }
+.new-search-btn { background: linear-gradient(to right, #a8c0ff, #3f2b96); }
+.logout-btn { background: linear-gradient(to right, #ff4b1f, #ff9068); }
+
+button:hover {
+    opacity: 0.8;
+}
+
+/* Inputs */
+input, select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Imagen de Producto */
+.product-image {
+    width: 150px;
+    height: auto;
+    display: block;
+    margin: 10px auto;
+    border-radius: 5px;
+}
+
+.uploaded-image {
+    max-width: 120px; /* Ajusta según sea necesario */
+    max-height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Contenedor de carrito */
+.cart-container {
+    margin-top: 10px;
+    text-align: left;
+}

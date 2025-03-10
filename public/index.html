@@ -1,47 +1,68 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consulta de Precios Para Pendejadillas</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Precios</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 </head>
-<body>
-  <div class="container">
-    <h1>Consulta de Precios</h1>
-    
-    <!-- Campo de búsqueda -->
-    <div class="search-box">
-      <input type="text" id="productName" placeholder="Ingresa el nombre del producto" />
-      <button id="searchButton">Buscar</button>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div class="container mx-auto p-4">
+        <h2 class="text-2xl font-bold mb-4">Consulta de Precios</h2>
+
+        <!-- Selección de ubicación -->
+        <div id="locationSelection" class="mb-6">
+            <h3 class="text-lg font-semibold mb-2">Selecciona tu ubicación</h3>
+            <select id="location" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="Pasaje Rodriguez">Pasaje Rodriguez</option>
+                <option value="Alameda Otay">Alameda Otay</option>
+                <option value="Macroplaza">Macroplaza</option>
+                <option value="Telcel 2000">Telcel 2000</option>
+                <option value="Movistar 2000">Movistar 2000</option>
+                <option value="Pabellon Rosarito">Pabellon Rosarito</option>
+                <option value="Escaparate">Escaparate</option>
+            </select>
+            <button id="confirmLocation" class="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-blue-600 transition duration-300">Confirmar Ubicación</button>
+        </div>
+
+        <!-- Aplicación Principal -->
+        <div id="mainApp" class="hidden">
+            <h3 class="text-lg font-semibold mb-4">Consulta de Precios</h3>
+            <input type="text" id="productName" placeholder="Ingrese el nombre del producto" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button id="searchPrice" class="bg-blue-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-blue-600 transition duration-300">Buscar</button>
+
+            <!-- Input oculto para el scanner físico -->
+            <input type="text" id="barcodeScannerInput" class="hidden" placeholder="Escanea un código aquí">
+
+            <!-- Botón para escanear con la cámara -->
+            <button id="scanPriceCamera" class="bg-green-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-green-600 transition duration-300">📷 Escanear con Cámara</button>
+
+            <div id="result" class="mt-4"></div>
+
+            <h3 class="text-lg font-semibold mt-6">Registro de Venta</h3>
+            <input type="number" id="quantity" placeholder="Cantidad" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button id="addToSale" class="bg-green-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-green-600 transition duration-300">Agregar a la Venta</button>
+
+            <!-- Input para la foto del producto -->
+            <label class="block mt-4">Subir imagen del producto:</label>
+            <input type="file" id="productImages" accept="image/*" multiple class="mt-2">
+            <div id="imagePreview" class="flex gap-2 mt-2"></div>
+
+            <div id="cart" class="mt-4"></div>
+
+            <button id="registerSale" class="bg-purple-500 text-white px-4 py-2 rounded-lg mt-4 hover:bg-purple-600 transition duration-300">Registrar Venta</button>
+            <button id="newSearch" class="bg-yellow-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-yellow-600 transition duration-300">Nueva Búsqueda</button>
+            <button id="logout" class="bg-red-500 text-white px-4 py-2 rounded-lg mt-2 hover:bg-red-600 transition duration-300">Cerrar Sesión</button>
+        </div>
+
+        <!-- Contenedor para la cámara -->
+        <div id="cameraScanner" class="hidden">
+            <div id="cameraPreview"></div>
+            <button id="stopCamera" class="bg-red-500 text-white px-4 py-2 rounded-lg mt-2">Detener Cámara</button>
+        </div>
     </div>
-    
-    <!-- Resultados de búsqueda -->
-    <div id="results" class="results">
-      <h2>Resultados:</h2>
-      <p id="priceMessage"></p>
 
-      <!-- Contenedor de la imagen -->
-      <div id="imageContainer" class="hidden">
-        <img id="productImage" src="" alt="Imagen del Producto" style="max-width: 200px; display: none;">
-      </div>
-
-      <p id="promotionMessage"></p>
-
-      <!-- Lista de productos similares -->
-      <div id="similarProductsContainer" class="hidden">
-        <h3>Productos Similares:</h3>
-        <ul id="similarProductsList"></ul>
-      </div>
-    </div>
-
-    <!-- Consejos de ventas -->
-    <div id="salesTips" class="sales-tips">
-      <h2>Consejos de Venta:</h2>
-      <p id="tipsMessage"></p>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
