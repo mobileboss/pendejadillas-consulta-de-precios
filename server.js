@@ -45,21 +45,23 @@ app.post("/get-price", async (req, res) => {
 
         const { data } = await sheets.spreadsheets.values.get({
             spreadsheetId: SPREADSHEET_ID,
-            range: "Productos!A2:F", // Asegúrate de que el rango sea correcto
+            range: "Productos!A2:F",
         });
 
         const rows = data.values || [];
         let producto = null;
 
+        const productCodeNormalizado = productCode ? productCode.trim().toLowerCase() : "";
+        const productNameNormalizado = productName ? productName.trim().toLowerCase() : "";
+
         for (const row of rows) {
             const [nombre, precio, imageUrl, promocion, codigoBarras, sku] = row;
 
-            // Normalizar SKU (eliminar espacios y convertir a minúsculas)
             const skuNormalizado = sku ? sku.trim().toLowerCase() : "";
-            const productCodeNormalizado = productCode ? productCode.trim().toLowerCase() : "";
+            const nombreNormalizado = nombre ? nombre.trim().toLowerCase() : "";
 
             if (
-                (productName && nombre.toLowerCase().trim() === productName.toLowerCase().trim()) ||
+                (productName && nombreNormalizado === productNameNormalizado) ||
                 (productCode && skuNormalizado === productCodeNormalizado)
             ) {
                 producto = { nombre, precio, imageUrl, promocion };
