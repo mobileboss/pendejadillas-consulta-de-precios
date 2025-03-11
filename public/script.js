@@ -43,30 +43,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Función para buscar un producto por nombre o SKU
     async function buscarProducto(query, type = "name") {
-        const body = type === "name"
-            ? { productName: query }  // Buscar por nombre
-            : { productCode: query }; // Buscar por SKU
+    const body = type === "name"
+        ? { productName: query }
+        : { productCode: query };
 
-        console.log("Datos enviados al servidor:", body); // Verifica los datos enviados
+    console.log("Datos enviados al servidor:", body);
 
-        try {
-            const response = await fetch("http://localhost:3001/get-price", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body)
-            });
+    try {
+        const response = await fetch("/get-price", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
 
-            if (!response.ok) {
-                throw new Error(`Error HTTP ${response.status}`);
-            }
-
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Error al buscar producto:", error);
-            throw error; // Relanza el error para manejarlo en el lugar correcto
+        if (!response.ok) {
+            throw new Error(`Error HTTP ${response.status}`);
         }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error al buscar producto:", error);
+        throw error;
     }
+}
 
     // Evento para buscar por nombre
     if (searchButton) {
@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
         imageFiles.forEach(file => formData.append("images", file));
 
         try {
-            const response = await fetch("http://localhost:3001/register-sale", {
+            const response = await fetch("/register-sale", {
                 method: "POST",
                 body: formData
             });
