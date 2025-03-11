@@ -179,6 +179,10 @@ app.post("/register-inventory", async (req, res) => {
         res.status(500).json({ message: "Error al registrar inventario." });
     }
 });
+// Ruta principal que devuelve index.html (frontend)
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 app.listen(port, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${port}`);
