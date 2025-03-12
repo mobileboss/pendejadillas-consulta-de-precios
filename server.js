@@ -86,8 +86,8 @@ app.post("/get-price", async (req, res) => {
         res.json({
             message: `✅ Producto encontrado: ${producto.nombre}`,
             productName: producto.nombre,
-            price: producto.precio ? producto.precio.toString() : "0",
-           imageUrl: producto.imageUrl,
+            price: producto.precio,
+            imageUrl: producto.imageUrl,
             promotion: producto.promocion || "Sin promoción",
         });
 
