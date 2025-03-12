@@ -32,7 +32,10 @@ async function authenticate() {
     const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
     const auth = new google.auth.GoogleAuth({
         credentials: credentials,
-        scopes: ["https://www.googleapis.com/auth
+        scopes: ["https://www.googleapis.com/auth/spreadsheets"], // ✅ CORREGIDO
+    });
+    return auth.getClient();
+}
 
 
 
