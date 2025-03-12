@@ -23,13 +23,16 @@ const upload = multer({ storage }).array("images", 3);
 // Configuración de Google Sheets
 const SPREADSHEET_ID = "1rLH1BqVhuetmlUcvWJEZwLUTUXtxbGkL6_vY7CdECQ8";
 
+const path = require("path");
+
 async function authenticate() {
     const auth = new google.auth.GoogleAuth({
-        keyFile: "credentials.json",
+        keyFile: path.join(__dirname, "credentials.json"),
         scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
     return auth.getClient();
 }
+
 
 // Endpoint para obtener precio (Búsqueda por nombre o código SKU)
 app.post("/get-price", async (req, res) => {
