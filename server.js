@@ -26,12 +26,15 @@ const SPREADSHEET_ID = "1rLH1BqVhuetmlUcvWJEZwLUTUXtxbGkL6_vY7CdECQ8";
 const path = require("path");
 
 async function authenticate() {
+    if (!process.env.GOOGLE_CREDENTIALS_JSON) {
+        throw new Error("🚨 ERROR: GOOGLE_CREDENTIALS_JSON no está definido en las variables de entorno.");
+    }
+
+    const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
     const auth = new google.auth.GoogleAuth({
-        keyFile: path.join(__dirname, "credentials.json"),
-        scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-    });
-    return auth.getClient();
-}
+        credentials: credentials,
+        scopes: ["https://www.googleapis.com/auth
+
 
 
 // Endpoint para obtener precio (Búsqueda por nombre o código SKU)
