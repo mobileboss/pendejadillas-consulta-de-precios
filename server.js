@@ -26,16 +26,18 @@ const SPREADSHEET_ID = "1rLH1BqVhuetmlUcvWJEZwLUTUXtxbGkL6_vY7CdECQ8";
 
 async function authenticate() {
     if (!process.env.GOOGLE_CREDENTIALS_JSON) {
-        throw new Error("🚨 ERROR: GOOGLE_CREDENTIALS_JSON no está definido en las variables de entorno.");
+        throw new Error("❌ ERROR: GOOGLE_CREDENTIALS_JSON no está definido en las variables de entorno.");
     }
 
     const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
     const auth = new google.auth.GoogleAuth({
         credentials: credentials,
-        scopes: ["https://www.googleapis.com/auth/spreadsheets"], // ✅ CORREGIDO
+        scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
+
     return auth.getClient();
 }
+
 
 
 
