@@ -23,7 +23,6 @@ const upload = multer({ storage }).array("images", 3);
 // Configuración de Google Sheets
 const SPREADSHEET_ID = "1rLH1BqVhuetmlUcvWJEZwLUTUXtxbGkL6_vY7CdECQ8";
 
-const path = require("path");
 
 async function authenticate() {
     if (!process.env.GOOGLE_CREDENTIALS_JSON) {
