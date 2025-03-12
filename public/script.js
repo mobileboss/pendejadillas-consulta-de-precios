@@ -98,6 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (scannedCode) {
                 try {
                     const data = await buscarProducto(scannedCode, "code"); // Buscar por SKU
+                    console.log("🔍 Datos recibidos de la API:", data); // 📌 Verifica los valores
                     document.getElementById("result").innerHTML = `
                         <p>${data.message}</p>
                         <img src="${data.imageUrl}" alt="Producto" class="w-32 h-32 object-cover">
