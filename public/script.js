@@ -252,13 +252,11 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             decoder: {
                readers: [
-            "code_39_reader",     // 📌 Agregado para leer Code 39
-            "ean_reader",         // 📌 EAN-13 (códigos de productos comerciales)
-            "upc_reader",         // 📌 UPC (códigos en EE.UU.)
-            "code_128_reader",    // 📌 Code 128 (común en envíos)
+            readers: ["code_128_reader", "ean_reader"], // Tipos de códigos de barras soportados
         ], // Tipos de códigos de barras soportados
             },
-        }, function (err) {
+        }, 
+                    function (err) {
             if (err) {
                 console.error("Error al iniciar la cámara:", err);
                 return;
