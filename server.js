@@ -6,6 +6,8 @@ const fs = require("fs");
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3001;
+const serverUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${port}`;
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
@@ -108,7 +110,7 @@ app.post("/register-sale", upload, async (req, res) => {
 
         const productos = JSON.parse(items);
         const fechaVenta = new Date().toISOString();
-        const imageUrls = (req.files || []).map(file => `/uploads/${file.filename}`);
+        const imageUrls = (req.files || []).map(file => `${serverUrl}/uploads/${file.filename}`);
 
         const authClient = await authenticate();
         const sheets = google.sheets({ version: "v4", auth: authClient });
