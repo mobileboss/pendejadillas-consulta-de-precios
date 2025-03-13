@@ -81,8 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <p>${data.promotion}</p>
                         <p>Precio: $${data.price}</p>
                     `;
-                    console.log("🔍 Datos recibidos de la API:", data); // 📌 Verifica los valores
-
+                    
                     document.getElementById("result").dataset.productName = data.productName;
                     document.getElementById("result").dataset.price = data.price;
                 } catch (error) {
