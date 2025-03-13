@@ -106,6 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <p>${data.promotion}</p>
                         <p>Precio: $${data.price}</p>
                     `;
+                    console.log("🔍 Respuesta de la API:", data); // 📌 Verifica lo que responde la API
                     document.getElementById("result").dataset.productName = data.productName;
                     document.getElementById("result").dataset.price = data.price;
                 } catch (error) {
