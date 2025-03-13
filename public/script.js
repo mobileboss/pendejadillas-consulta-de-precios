@@ -251,7 +251,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
             },
             decoder: {
-                readers: ["code_128_reader", "ean_reader"], // Tipos de códigos de barras soportados
+               readers: [
+            "code_39_reader",     // 📌 Agregado para leer Code 39
+            "ean_reader",         // 📌 EAN-13 (códigos de productos comerciales)
+            "upc_reader",         // 📌 UPC (códigos en EE.UU.)
+            "code_128_reader",    // 📌 Code 128 (común en envíos)
+        ], // Tipos de códigos de barras soportados
             },
         }, function (err) {
             if (err) {
