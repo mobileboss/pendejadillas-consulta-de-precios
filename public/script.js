@@ -262,7 +262,7 @@ if (scanPriceCameraButton) {
                             "ean_reader",       
                             "ean_13_reader",    
                             "upc_reader",       
-                            "code_39_reader"    
+                            "code_39_reader"     
                         ]
                     },
                     locate: true // 🔍 Activa la localización automática
