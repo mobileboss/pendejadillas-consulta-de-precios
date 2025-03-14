@@ -230,19 +230,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Configuración de la cámara para escanear códigos de barras
     // Configuración de la cámara para escanear códigos de barras
 if (scanPriceCameraButton) {
-    scanPriceCameraButton.addEventListener("click", () => {
-        document.getElementById("cameraScanner").classList.remove("hidden");
-        iniciarCamara();
-    });
-}
-
-if (stopCameraButton) {
-    stopCameraButton.addEventListener("click", detenerCamara);
-}
-
-// Función para iniciar la cámara
-// Configuración de la cámara para escanear códigos de barras
-if (scanPriceCameraButton) {
         scanPriceCameraButton.addEventListener("click", () => {
             document.getElementById("cameraScanner").classList.remove("hidden");
             iniciarCamara();
