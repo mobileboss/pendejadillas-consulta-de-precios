@@ -299,7 +299,8 @@ if (scanPriceCameraButton) {
                     detenerCamara(); // 🛑 Detiene la cámara después de escanear
                 });
 
-            }).catch(err => {
+            })
+                .catch(err => {
                 console.error("❌ Permiso de cámara denegado:", err);
                 alert("Debes permitir el acceso a la cámara para escanear códigos de barras.");
             });
