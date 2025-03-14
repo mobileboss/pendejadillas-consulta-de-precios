@@ -246,7 +246,15 @@ if (scanPriceCameraButton) {
 
         // 🔍 Verifica permisos antes de iniciar
         navigator.mediaDevices.getUserMedia({ video: true })
-            .then(() => {
+    .then(() => {
+        console.log("✅ Permiso de cámara concedido.");
+        iniciarCamara();
+    })
+    .catch(err => {
+        console.error("❌ No se pudo acceder a la cámara:", err);
+        alert("Debes permitir el acceso a la cámara para escanear códigos.");
+    });
+
                 Quagga.init({
                     inputStream: {
                         name: "Live",
