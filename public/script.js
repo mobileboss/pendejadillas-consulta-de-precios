@@ -299,7 +299,6 @@ if (scanPriceCameraButton) {
             alert("Debes permitir el acceso a la cámara para escanear códigos de barras.");
         });
 }
-    }
 
     // ✅ Función para detener la cámara
     function detenerCamara() {
