@@ -254,7 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 readers: ["code_128_reader", "ean_reader"], // Tipos de códigos de barras soportados
             },
             
-        ], // Tipos de códigos de barras soportados
+         // Tipos de códigos de barras soportados
             },
         }, function (err) {
             if (err) {
