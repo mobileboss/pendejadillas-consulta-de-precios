@@ -298,7 +298,7 @@ function iniciarCamara() {
 
 function detenerCamara() {
     console.log("🛑 Deteniendo cámara...");
-    Quagga.stop();
+    Quagga.stop(); 
     document.getElementById("cameraScanner").classList.add("hidden");
-}
+})
      
