@@ -293,3 +293,4 @@ function detenerCamara() {
     Quagga.stop();
     document.getElementById("cameraScanner").classList.add("hidden");
 }
+});
