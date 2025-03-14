@@ -251,33 +251,33 @@ if (scanPriceCameraButton) {
 
             // Inicializa Quagga para escanear códigos de barras
             Quagga.init({
-                inputStream: {
-                    name: "Live",
-                    type: "LiveStream",
-                    target: document.getElementById("cameraPreview"),
-                    constraints: {
-                        facingMode: "environment", // Usa la cámara trasera
-                    },
-                },
-                decoder: {
-                    readers: [
-                        "code_128_reader",  
-                        "ean_reader",       
-                        "ean_13_reader",    
-                        "upc_reader",       
-                        "code_39_reader"     
-                    ]
-                },
-                locate: true // 🔍 Activa la localización automática
-            }, function (err) {
-                if (err) {
-                    console.error("❌ Error al iniciar la cámara:", err);
-                    alert("No se pudo iniciar la cámara. Verifica los permisos.");
-                    return;
-                }
-                console.log("📸 Cámara iniciada correctamente.");
-                Quagga.start();
-            });
+    inputStream: {
+        name: "Live",
+        type: "LiveStream",
+        target: document.getElementById("cameraPreview"),
+        constraints: {
+            facingMode: "environment", // Usa la cámara trasera
+        },
+    },
+    decoder: {
+        readers: [
+            "code_128_reader",  
+            "ean_reader",       
+            "ean_13_reader",    
+            "upc_reader",       
+            "code_39_reader"    
+        ]
+    },
+    locate: true // Activa la localización automática
+}, function (err) {
+    if (err) {
+        console.error("Error al iniciar la cámara:", err);
+        alert("No se pudo iniciar la cámara. Verifica los permisos.");
+        return;
+    }
+    console.log("Cámara iniciada correctamente.");
+    Quagga.start();
+});
 
             // ✅ Evita múltiples detecciones duplicadas
             Quagga.offDetected();
