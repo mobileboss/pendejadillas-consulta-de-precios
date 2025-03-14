@@ -244,7 +244,7 @@ if (scanPriceCameraButton) {
     function iniciarCamara() {
         console.log("🚀 Iniciando escaneo de código de barras...");
 
-        // 🔍 Verifica que el navegador tiene permisos de cámara antes de iniciar
+        // 🔍 Verifica permisos antes de iniciar
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(() => {
                 Quagga.init({
@@ -258,14 +258,14 @@ if (scanPriceCameraButton) {
                     },
                     decoder: {
                         readers: [
-                            "code_128_reader",  // ✅ Code 128 (envíos y logística)
-                            "ean_reader",       // ✅ EAN (productos en Europa)
-                            "ean_13_reader",    // ✅ EAN-13 (productos comerciales)
-                            "upc_reader",       // ✅ UPC (códigos EE.UU.)
-                            "code_39_reader"    // ✅ Code 39 (almacenes, logística)
+                            "code_128_reader",  
+                            "ean_reader",       
+                            "ean_13_reader",    
+                            "upc_reader",       
+                            "code_39_reader"    
                         ]
                     },
-                    locate: true // 🔍 Activa la localización automática del código
+                    locate: true // 🔍 Activa la localización automática
                 }, function (err) {
                     if (err) {
                         console.error("❌ Error al iniciar la cámara:", err);
@@ -276,8 +276,8 @@ if (scanPriceCameraButton) {
                     Quagga.start();
                 });
 
-                // ✅ Asegura que `Quagga.onDetected` se registre solo una vez
-                Quagga.offDetected(); // 🔄 Evita múltiples detecciones duplicadas
+                // ✅ Evita múltiples detecciones duplicadas
+                Quagga.offDetected();
                 Quagga.onDetected((data) => {
                     if (!data || !data.codeResult || !data.codeResult.code) {
                         console.warn("⚠️ No se detectó un código de barras válido.");
