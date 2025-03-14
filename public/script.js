@@ -251,12 +251,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
             },
             decoder: {
-               readers: [
-            readers: ["code_128_reader", "ean_reader"], // Tipos de códigos de barras soportados
+                readers: ["code_128_reader", "ean_reader"], // Tipos de códigos de barras soportados
+            },
+            
         ], // Tipos de códigos de barras soportados
             },
-        }, 
-                    function (err) {
+        }, function (err) {
             if (err) {
                 console.error("Error al iniciar la cámara:", err);
                 return;
