@@ -255,7 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             
          // Tipos de códigos de barras soportados
-            },
+            
         }, function (err) {
             if (err) {
                 console.error("Error al iniciar la cámara:", err);
