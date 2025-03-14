@@ -242,68 +242,63 @@ if (scanPriceCameraButton) {
 
     // ✅ Función para iniciar la cámara y escanear códigos de barras
     function iniciarCamara() {
-        console.log("🚀 Iniciando escaneo de código de barras...");
+    console.log("🚀 Iniciando escaneo de código de barras...");
 
-        // 🔍 Verifica permisos antes de iniciar
-        navigator.mediaDevices.getUserMedia({ video: true })
-    .then(() => {
-        console.log("✅ Permiso de cámara concedido.");
-        iniciarCamara();
-    })
-    .catch(err => {
-        console.error("❌ No se pudo acceder a la cámara:", err);
-        alert("Debes permitir el acceso a la cámara para escanear códigos.");
-    });
+    // 🔍 Verifica permisos antes de iniciar
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(() => {
+            console.log("✅ Permiso de cámara concedido.");
 
-                Quagga.init({
-                    inputStream: {
-                        name: "Live",
-                        type: "LiveStream",
-                        target: document.getElementById("cameraPreview"),
-                        constraints: {
-                            facingMode: "environment", // Usa la cámara trasera
-                        },
+            // Inicializa Quagga para escanear códigos de barras
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.getElementById("cameraPreview"),
+                    constraints: {
+                        facingMode: "environment", // Usa la cámara trasera
                     },
-                    decoder: {
-                        readers: [
-                            "code_128_reader",  
-                            "ean_reader",       
-                            "ean_13_reader",    
-                            "upc_reader",       
-                            "code_39_reader"     
-                        ]
-                    },
-                    locate: true // 🔍 Activa la localización automática
-                }, function (err) {
-                    if (err) {
-                        console.error("❌ Error al iniciar la cámara:", err);
-                        alert("No se pudo iniciar la cámara. Verifica los permisos.");
-                        return;
-                    }
-                    console.log("📸 Cámara iniciada correctamente.");
-                    Quagga.start();
-                });
-
-                // ✅ Evita múltiples detecciones duplicadas
-                Quagga.offDetected();
-                Quagga.onDetected((data) => {
-                    if (!data || !data.codeResult || !data.codeResult.code) {
-                        console.warn("⚠️ No se detectó un código de barras válido.");
-                        return;
-                    }
-
-                    const scannedCode = data.codeResult.code.trim();
-                    console.log("📸 Código detectado:", scannedCode);
-
-                    buscarProducto(scannedCode, "code"); // 📌 Envía el código al servidor
-                    detenerCamara(); // 🛑 Detiene la cámara después de escanear
-                });
-
-            })
-                .catch(err => {
-                console.error("❌ Permiso de cámara denegado:", err);
-                alert("Debes permitir el acceso a la cámara para escanear códigos de barras.");
+                },
+                decoder: {
+                    readers: [
+                        "code_128_reader",  
+                        "ean_reader",       
+                        "ean_13_reader",    
+                        "upc_reader",       
+                        "code_39_reader"     
+                    ]
+                },
+                locate: true // 🔍 Activa la localización automática
+            }, function (err) {
+                if (err) {
+                    console.error("❌ Error al iniciar la cámara:", err);
+                    alert("No se pudo iniciar la cámara. Verifica los permisos.");
+                    return;
+                }
+                console.log("📸 Cámara iniciada correctamente.");
+                Quagga.start();
             });
+
+            // ✅ Evita múltiples detecciones duplicadas
+            Quagga.offDetected();
+            Quagga.onDetected((data) => {
+                if (!data || !data.codeResult || !data.codeResult.code) {
+                    console.warn("⚠️ No se detectó un código de barras válido.");
+                    return;
+                }
+
+                const scannedCode = data.codeResult.code.trim();
+                console.log("📸 Código detectado:", scannedCode);
+
+                buscarProducto(scannedCode, "code"); // 📌 Envía el código al servidor
+                detenerCamara(); // 🛑 Detiene la cámara después de escanear
+            });
+        })
+        .catch(err => {
+            console.error("❌ Permiso de cámara denegado:", err);
+            alert("Debes permitir el acceso a la cámara para escanear códigos de barras.");
+        });
+}
     }
 
     // ✅ Función para detener la cámara
