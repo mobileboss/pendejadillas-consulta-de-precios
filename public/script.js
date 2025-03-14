@@ -43,30 +43,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Función para buscar un producto por nombre o SKU
     async function buscarProducto(query, type = "name") {
-    const body = type === "name"
-        ? { productName: query }
-        : { productCode: query };
+        const body = type === "name"
+            ? { productName: query }  // Buscar por nombre
+            : { productCode: query }; // Buscar por SKU
 
-    console.log("Datos enviados al servidor:", body);
+        console.log("Datos enviados al servidor:", body); // Verifica los datos enviados
 
-    try {
-        const response = await fetch("/get-price", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body)
-        });
+        try {
+            const response = await fetch("http://localhost:3001/get-price", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
 
-        if (!response.ok) {
-            throw new Error(`Error HTTP ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`Error HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error al buscar producto:", error);
+            throw error; // Relanza el error para manejarlo en el lugar correcto
         }
-
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error("Error al buscar producto:", error);
-        throw error;
     }
-}
 
     // Evento para buscar por nombre
     if (searchButton) {
@@ -81,7 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         <p>${data.promotion}</p>
                         <p>Precio: $${data.price}</p>
                     `;
-                    
                     document.getElementById("result").dataset.productName = data.productName;
                     document.getElementById("result").dataset.price = data.price;
                 } catch (error) {
@@ -105,7 +104,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         <p>${data.promotion}</p>
                         <p>Precio: $${data.price}</p>
                     `;
-                    console.log("🔍 Respuesta de la API:", data); // 📌 Verifica lo que responde la API
                     document.getElementById("result").dataset.productName = data.productName;
                     document.getElementById("result").dataset.price = data.price;
                 } catch (error) {
@@ -201,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
         imageFiles.forEach(file => formData.append("images", file));
 
         try {
-            const response = await fetch("/register-sale", {
+            const response = await fetch("http://localhost:3001/register-sale", {
                 method: "POST",
                 body: formData
             });
@@ -228,84 +226,49 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Configuración de la cámara para escanear códigos de barras
-    // Configuración de la cámara para escanear códigos de barras
-if (scanPriceCameraButton) {
-    scanPriceCameraButton.addEventListener("click", () => {
-        document.getElementById("cameraScanner").classList.remove("hidden");
-        iniciarCamara();
-    });
-}
+    if (scanPriceCameraButton) {
+        scanPriceCameraButton.addEventListener("click", () => {
+            document.getElementById("cameraScanner").classList.remove("hidden");
+            iniciarCamara();
+        });
+    }
 
-if (stopCameraButton) {
-    stopCameraButton.addEventListener("click", detenerCamara);
-}
+    if (stopCameraButton) {
+        stopCameraButton.addEventListener("click", detenerCamara);
+    }
 
-// Función para iniciar la cámara
-// Configuración de la cámara para escanear códigos de barras
-if (scanPriceCameraButton) {
-    scanPriceCameraButton.addEventListener("click", () => {
-        document.getElementById("cameraScanner").classList.remove("hidden");
-        iniciarCamara();
-    });
-}
-
-if (stopCameraButton) {
-    stopCameraButton.addEventListener("click", detenerCamara);
-}
-
-// Función para iniciar la cámara
-function iniciarCamara() {
-    console.log("🚀 Iniciando escaneo de código de barras...");
-
-    Quagga.init({
-        inputStream: {
-            name: "Live",
-            type: "LiveStream",
-            target: document.getElementById("cameraPreview"),
-            constraints: {
-                facingMode: "environment", // Usa la cámara trasera
+    // Función para iniciar la cámara
+    function iniciarCamara() {
+        Quagga.init({
+            inputStream: {
+                name: "Live",
+                type: "LiveStream",
+                target: document.getElementById("cameraPreview"),
+                constraints: {
+                    facingMode: "environment", // Usa la cámara trasera
+                },
             },
-        },
-        decoder: {
-            readers: [
-                "code_39_reader",     // 📌 Code 39 (Almacenes, logística)
-                "code_128_reader",    // 📌 Code 128 (Envíos y transporte)
-                "ean_reader",         // 📌 EAN (Códigos de productos en Europa)
-                "ean_13_reader",      // 📌 EAN-13 (Códigos más comunes en productos)
-                "upc_reader"          // 📌 UPC (Códigos de productos en EE.UU.)
-            ].map(reader => ({ format: reader, config: {} })) // ✅ Asegura compatibilidad
-        },
-        locate: true // 🔍 Activa la localización automática del código
-    }, function (err) {
-        if (err) {
-            console.error("❌ Error al iniciar la cámara:", err);
-            alert("No se pudo iniciar la cámara. Verifica los permisos.");
-            return;
-        }
-        console.log("📸 Cámara iniciada correctamente.");
-        Quagga.start();
-    });
+            decoder: {
+                readers: ["code_128_reader", "ean_reader"], // Tipos de códigos de barras soportados
+            },
+        }, function (err) {
+            if (err) {
+                console.error("Error al iniciar la cámara:", err);
+                return;
+            }
+            Quagga.start();
+        });
 
-    // Evento que se dispara cuando Quagga detecta un código de barras
-    Quagga.onDetected((data) => {
-        if (!data || !data.codeResult || !data.codeResult.code) {
-            console.warn("⚠️ No se detectó un código de barras válido.");
-            return;
-        }
+        Quagga.onDetected((data) => {
+            const scannedCode = data.codeResult.code;
+            buscarProducto(scannedCode, "code"); // Busca por SKU
+            detenerCamara(); // Detiene la cámara después de escanear
+        });
+    }
 
-        const scannedCode = data.codeResult.code.trim();
-        console.log("📸 Código detectado:", scannedCode);
-
-        buscarProducto(scannedCode, "code"); // 📌 Envía el código al servidor
-        detenerCamara(); // Detiene la cámara después de escanear
-    });
-}
-
-// Función para detener la cámara
-function detenerCamara() {
-    console.log("🛑 Deteniendo cámara...");
-    Quagga.stop();
-    document.getElementById("cameraScanner").classList.add("hidden");
-}
-
+    // Función para detener la cámara
+    function detenerCamara() {
+        Quagga.stop();
+        document.getElementById("cameraScanner").classList.add("hidden");
+    }
 });
