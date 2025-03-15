@@ -253,6 +253,12 @@ function iniciarCamara() {
                 return;
             }
 
+            // Verifica si Quagga ya está en ejecución
+            if (Quagga.running) {
+                console.log("⚠️ Quagga ya está en ejecución.");
+                return;
+            }
+
             Quagga.init({
                 inputStream: {
                     name: "Live",
@@ -261,10 +267,10 @@ function iniciarCamara() {
                     constraints: { facingMode: "environment" }
                 },
                 decoder: {
-                    readers: ["code_128_reader", "ean_reader", "ean_13_reader", "upc_reader", "code_39_reader"]
+                    readers: ["ean_reader"] // Usa un solo lector para pruebas
                 },
                 locate: true,
-                numOfWorkers: 0
+                numOfWorkers: 1 // Activa Web Workers
             }, function (err) {
                 if (err) {
                     console.error("❌ Error al iniciar la cámara:", err);
@@ -275,7 +281,6 @@ function iniciarCamara() {
                 console.log("📸 Cámara iniciada correctamente.");
                 Quagga.start();
 
-                // Configura el evento de detección solo una vez
                 if (!Quagga._onDetectedRegistered) {
                     Quagga.onDetected((data) => {
                         if (!data || !data.codeResult || !data.codeResult.code) {
