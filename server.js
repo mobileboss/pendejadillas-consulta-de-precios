@@ -63,19 +63,18 @@ app.post("/get-price", async (req, res) => {
         const rows = data.values || [];
         let producto = null;
 
-        const productCodeNormalizado = productCode ? productCode.trim().toLowerCase() : "";
+        // 🔹 Normalizar el código que se recibe en la solicitud (el escaneado o ingresado manualmente)
+        let productCodeNormalizado = productCode ? productCode.replace("SKU-", "").trim().toLowerCase() : "";
         const productNameNormalizado = productName ? productName.trim().toLowerCase() : "";
 
         for (const row of rows) {
             const [nombre, precio, imageUrl, promocion, codigoBarras, sku] = row;
 
-             // 🔹 Normalizar SKU para quitar "SKU-" y compararlo correctamente
+            // 🔹 Normalizar el SKU de la hoja de Google eliminando "SKU-" antes de comparar
             const skuNormalizado = sku ? sku.replace("SKU-", "").trim().toLowerCase() : "";
-            const productCodeNormalizado = productCode ? productCode.trim().toLowerCase() : "";
-
 
             if (
-                (productName && nombreNormalizado === productNameNormalizado) ||
+                (productName && nombre.trim().toLowerCase() === productNameNormalizado) ||
                 (productCode && skuNormalizado === productCodeNormalizado)
             ) {
                 producto = { nombre, precio, imageUrl, promocion };
