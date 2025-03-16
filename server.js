@@ -69,8 +69,10 @@ app.post("/get-price", async (req, res) => {
         for (const row of rows) {
             const [nombre, precio, imageUrl, promocion, codigoBarras, sku] = row;
 
-            const skuNormalizado = sku ? sku.trim().toLowerCase() : "";
-            const nombreNormalizado = nombre ? nombre.trim().toLowerCase() : "";
+             // 🔹 Normalizar SKU para quitar "SKU-" y compararlo correctamente
+            const skuNormalizado = sku ? sku.replace("SKU-", "").trim().toLowerCase() : "";
+            const productCodeNormalizado = productCode ? productCode.trim().toLowerCase() : "";
+
 
             if (
                 (productName && nombreNormalizado === productNameNormalizado) ||
