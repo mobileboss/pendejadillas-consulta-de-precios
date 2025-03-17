@@ -47,8 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ? { productName: query }
         : { productCode: query };
 
-    console.log("Datos enviados al servidor:", body);
-
+    console.log("📤 Datos enviados al servidor:", JSON.stringify(body)); // 📌 Verifica qué se envía
     try {
         const response = await fetch("/get-price", {
             method: "POST",
