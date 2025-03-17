@@ -100,6 +100,7 @@ app.post("/get-price", async (req, res) => {
     }
 });
 
+
 // Endpoint para registrar venta
 app.post("/register-sale", upload, async (req, res) => {
     try {
