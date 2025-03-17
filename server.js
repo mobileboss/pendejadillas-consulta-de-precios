@@ -46,6 +46,8 @@ async function authenticate() {
 // Endpoint para obtener precio (Búsqueda por nombre o código SKU)
 app.post("/get-price", async (req, res) => {
     try {
+        console.log("📩 Datos recibidos en el servidor:", req.body); // Verifica lo que llega
+
         const { productName, productCode } = req.body;
 
         if (!productName && !productCode) {
@@ -63,19 +65,24 @@ app.post("/get-price", async (req, res) => {
         const rows = data.values || [];
         let producto = null;
 
-        // 🔹 Normalizar el código que se recibe en la solicitud (el escaneado o ingresado manualmente)
+        // Normaliza el código enviado desde el cliente
         let productCodeNormalizado = productCode ? productCode.replace("SKU-", "").trim().toLowerCase() : "";
         const productNameNormalizado = productName ? productName.trim().toLowerCase() : "";
+
+        console.log(`🔎 Código recibido para búsqueda: "${productCodeNormalizado}"`);
 
         for (const row of rows) {
             const [nombre, precio, imageUrl, promocion, codigoBarras, sku] = row;
 
-            // 🔹 Normalizar el SKU de la hoja de Google eliminando "SKU-" antes de comparar
+            // Normalizar SKU y código de barras de la hoja de Google
             const skuNormalizado = sku ? sku.replace("SKU-", "").trim().toLowerCase() : "";
+            const codigoBarrasNormalizado = codigoBarras ? codigoBarras.trim().toLowerCase() : "";
+
+            console.log(`📊 Comparando: Código Escaneado "${productCodeNormalizado}" vs SKU "${skuNormalizado}" vs Código de Barras "${codigoBarrasNormalizado}"`);
 
             if (
                 (productName && nombre.trim().toLowerCase() === productNameNormalizado) ||
-                (productCode && skuNormalizado === productCodeNormalizado)
+                (productCode && (skuNormalizado === productCodeNormalizado || codigoBarrasNormalizado === productCodeNormalizado))
             ) {
                 producto = { nombre, precio, imageUrl, promocion };
                 break;
@@ -83,9 +90,11 @@ app.post("/get-price", async (req, res) => {
         }
 
         if (!producto) {
+            console.log("❌ Producto no encontrado.");
             return res.status(404).json({ message: "Producto no encontrado" });
         }
 
+        console.log("✅ Producto encontrado:", producto);
         res.json({
             message: `✅ Producto encontrado: ${producto.nombre}`,
             productName: producto.nombre,
@@ -99,6 +108,7 @@ app.post("/get-price", async (req, res) => {
         res.status(500).json({ message: "Error al obtener precio." });
     }
 });
+
 
 
 // Endpoint para registrar venta
