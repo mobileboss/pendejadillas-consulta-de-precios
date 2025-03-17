@@ -252,7 +252,6 @@ function iniciarCamara() {
                 return;
             }
 
-            // Verifica si Quagga ya está en ejecución
             if (Quagga.running) {
                 console.log("⚠️ Quagga ya está en ejecución.");
                 return;
@@ -266,10 +265,10 @@ function iniciarCamara() {
                     constraints: { facingMode: "environment" }
                 },
                 decoder: {
-                    readers: ["ean_reader"] // Usa un solo lector para pruebas
+                    readers: ["code_39_reader", "ean_reader", "code_128_reader"]
                 },
                 locate: true,
-                numOfWorkers: 1 // Activa Web Workers
+                numOfWorkers: 1
             }, function (err) {
                 if (err) {
                     console.error("❌ Error al iniciar la cámara:", err);
@@ -287,7 +286,7 @@ function iniciarCamara() {
                             return;
                         }
 
-                        const scannedCode = data.codeResult.code.trim();
+                        const scannedCode = data.codeResult.code.replace(/^SKU-|\W/g, "").trim();
                         console.log("📸 Código detectado:", scannedCode);
 
                         buscarProducto(scannedCode, "code");
@@ -302,6 +301,15 @@ function iniciarCamara() {
             alert("⚠️ No se pudo acceder a la cámara. Verifica los permisos en la configuración de tu navegador.");
         });
 }
+
+function detenerCamara() {
+    if (Quagga.running) {
+        Quagga.stop();
+    }
+    document.getElementById("cameraScanner").classList.add("hidden");
+    console.log("🛑 Cámara detenida.");
+}
+
 
 function detenerCamara() {
     console.log("🛑 Deteniendo cámara...");
