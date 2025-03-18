@@ -41,13 +41,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Función para buscar un producto por nombre o SKU
-    async function buscarProducto(query, type = "name") {
-    const body = type === "name"
-        ? { productName: query }
-        : { productCode: query };
+  // **Función para buscar un producto por código de barras o nombre**
+async function buscarProducto(query, type = "name") {
+    const body = type === "name" ? { productName: query } : { productCode: query };
 
-    console.log("📤 Datos enviados al servidor:", JSON.stringify(body)); // 📌 Verifica qué se envía
+    console.log("📤 Datos enviados al servidor:", JSON.stringify(body));
+
     try {
         const response = await fetch("/get-price", {
             method: "POST",
@@ -60,36 +59,66 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const data = await response.json();
-        return data;
+        mostrarResultado(data);
     } catch (error) {
         console.error("Error al buscar producto:", error);
-        throw error;
+        alert("❌ Error al buscar el producto. Intenta de nuevo.");
     }
 }
 
-    // Evento para buscar por nombre
-    if (searchButton) {
-        searchButton.addEventListener("click", async () => {
-            const productName = document.getElementById("productName").value.trim();
-            if (productName) {
-                try {
-                    const data = await buscarProducto(productName, "name");
-                    document.getElementById("result").innerHTML = `
-                        <p>${data.message}</p>
-                        <img src="${data.imageUrl}" alt="Producto" class="w-32 h-32 object-cover">
-                        <p>${data.promotion}</p>
-                        <p>Precio: $${data.price}</p>
-                    `;
-                    
-                    document.getElementById("result").dataset.productName = data.productName;
-                    document.getElementById("result").dataset.price = data.price;
-                } catch (error) {
-                    console.error("Error al buscar producto:", error);
-                    alert("Error al buscar producto. Verifica el nombre e intenta nuevamente.");
-                }
-            }
-        });
+// **Función para mostrar el resultado en pantalla**
+function mostrarResultado(data) {
+    const resultDiv = document.getElementById("result");
+    if (!data || !data.productName) {
+        resultDiv.innerHTML = "<p>❌ Producto no encontrado.</p>";
+        return;
     }
+
+    resultDiv.innerHTML = `
+        <p>${data.message}</p>
+        <img src="${data.imageUrl}" alt="Producto" class="w-32 h-32 object-cover">
+        <p>${data.promotion}</p>
+        <p>Precio: $${data.price}</p>
+    `;
+
+    resultDiv.dataset.productName = data.productName;
+    resultDiv.dataset.price = data.price;
+}
+
+// **Evento para buscar por nombre**
+if (searchButton) {
+    searchButton.addEventListener("click", async () => {
+        const productName = document.getElementById("productName").value.trim();
+        if (productName) {
+            buscarProducto(productName, "name");
+        } else {
+            alert("⚠️ Ingresa un nombre de producto.");
+        }
+    });
+}
+
+// **Evento para buscar por código de barras manual**
+if (barcodeScannerInput) {
+    barcodeScannerInput.addEventListener("change", async (event) => {
+        const scannedCode = event.target.value.trim();
+        if (scannedCode) {
+            buscarProducto(scannedCode, "code");
+        }
+        barcodeScannerInput.value = "";
+    });
+}
+
+// **Escaneo con cámara**
+if (scanPriceCameraButton) {
+    scanPriceCameraButton.addEventListener("click", () => {
+        document.getElementById("cameraScanner").classList.remove("hidden");
+        iniciarCamara();
+    });
+}
+
+if (stopCameraButton) {
+    stopCameraButton.addEventListener("click", detenerCamara);
+}
 
     // Evento para el scanner físico
     if (barcodeScannerInput) {
