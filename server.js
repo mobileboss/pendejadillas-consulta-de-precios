@@ -62,7 +62,7 @@ app.post("/get-price", async (req, res) => {
     spreadsheetId: SPREADSHEET_ID,
     range: "Productos!A2:H", // Cambiar "A2:F" por "A2:H" para incluir la columna del código de barras
 });
-
+    console.log("📋 Datos obtenidos de Google Sheets:", data.values); // 🔍 Ver los datos reales obtenidos
 
         const rows = data.values || [];
         let producto = null;
@@ -191,7 +191,7 @@ app.post("/register-inventory", async (req, res) => {
 
         await sheets.spreadsheets.values.append({
             spreadsheetId: SPREADSHEET_ID,
-            range: "Inventarios!A:F",
+            range: "Inventarios!A:H",
             valueInputOption: "USER_ENTERED",
             requestBody: {
                 values: [
