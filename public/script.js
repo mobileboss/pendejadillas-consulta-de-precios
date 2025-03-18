@@ -181,38 +181,43 @@ if (barcodeScannerInput) {
     }
 
     // Evento para registrar la venta
-    registerSaleButton.addEventListener("click", async () => {
-        if (cart.length === 0) {
-            alert("No hay productos en la venta.");
+registerSaleButton.addEventListener("click", async () => {
+    if (cart.length === 0) {
+        alert("⚠️ No hay productos en la venta.");
+        return;
+    }
+
+    const formData = {
+        vendedorId: "user123",  // 📌 Cambia esto si necesitas un vendedor dinámico
+        locationId: selectedLocation,
+        items: cart
+    };
+
+    console.log("📤 Enviando datos de venta:", JSON.stringify(formData, null, 2)); // 📌 Muestra los datos enviados
+
+    try {
+        const response = await fetch("/register-sale", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            const errorMessage = await response.text(); // 📌 Lee la respuesta del servidor
+            console.error("❌ Error al registrar la venta:", errorMessage);
+            alert(`❌ Error al registrar la venta: ${errorMessage}`);
             return;
         }
 
-        const formData = new FormData();
-        formData.append("vendedorId", "user123");
-        formData.append("locationId", selectedLocation);
-        formData.append("items", JSON.stringify(cart));
+        const result = await response.json();
+        alert("✅ Venta registrada con éxito.");
+        resetFormulario();
+    } catch (error) {
+        console.error("❌ Error en la solicitud:", error);
+        alert("❌ Error al registrar la venta.");
+    }
+});
 
-        imageFiles.forEach(file => formData.append("images", file));
-
-        try {
-            const response = await fetch("/register-sale", {
-                method: "POST",
-                body: formData
-            });
-
-            if (!response.ok) {
-                alert("❌ Error al registrar la venta.");
-                return;
-            }
-
-            const result = await response.json();
-            alert("✅ Venta registrada con éxito.");
-            resetFormulario();
-        } catch (error) {
-            console.error("❌ Error al registrar venta:", error);
-            alert("❌ Error al registrar la venta.");
-        }
-    });
 
     // Función para resetear el formulario
     function resetFormulario() {
