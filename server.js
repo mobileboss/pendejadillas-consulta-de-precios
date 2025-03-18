@@ -49,48 +49,74 @@ app.post("/get-price", async (req, res) => {
         if (!productName && !productCode) {
             return res.status(400).json({ message: "Debes proporcionar el nombre o el código del producto." });
         }
-        console.log(`🔎 Buscando producto con código: ${productCode}`);
+
+        console.log(`🔎 Buscando producto con código: ${productCode || "No proporcionado"}, Nombre: ${productName || "No proporcionado"}`);
 
         const authClient = await authenticate();
         const sheets = google.sheets({ version: "v4", auth: authClient });
 
         const { data } = await sheets.spreadsheets.values.get({
             spreadsheetId: SPREADSHEET_ID,
-            range: "Productos!A2:H", // Ahora hasta la columna H para incluir código de barras
+            range: "Productos!A2:H", // Incluye todas las columnas necesarias
         });
 
-        console.log("📋 Datos obtenidos de Google Sheets:", data.values);
+        console.log("📋 Datos obtenidos de Google Sheets:", data.values.length ? "Datos cargados correctamente" : "No hay datos");
 
         const rows = data.values || [];
         let producto = null;
 
-        // Normaliza el código enviado desde el cliente
+        // **Normalizar datos de entrada**
         let productCodeNormalizado = productCode ? productCode.trim().toLowerCase() : "";
-        const productNameNormalizado = productName ? productName.trim().toLowerCase() : "";
+        let productNameNormalizado = productName ? productName.trim().toLowerCase() : "";
 
         console.log(`🔎 Código recibido para búsqueda: "${productCodeNormalizado}"`);
+        console.log(`🔎 Nombre recibido para búsqueda: "${productNameNormalizado}"`);
 
         for (const row of rows) {
             const [nombre, precio, imageUrl, promocion, , , , codigoBarras] = row; // Columna H (índice 7)
 
-            // **Saltar filas que no tienen código de barras**
+            // **Saltar filas sin código de barras**
             if (!codigoBarras || codigoBarras.trim() === "") {
                 console.log("⚠️ Saltando fila sin código de barras:", row);
                 continue;
             }
 
+            // **Normalizar el código de barras**
             const codigoBarrasNormalizado = codigoBarras.trim().toLowerCase();
 
             console.log(`📊 Comparando: Código Escaneado "${productCodeNormalizado}" vs Código de Barras "${codigoBarrasNormalizado}"`);
 
+            // **Verificar si coincide el código de barras o el nombre**
             if (
-                (productName && nombre.trim().toLowerCase() === productNameNormalizado) ||
-                (productCode && codigoBarrasNormalizado === productCodeNormalizado)
+                (productCode && codigoBarrasNormalizado === productCodeNormalizado) ||
+                (productName && nombre.trim().toLowerCase() === productNameNormalizado)
             ) {
                 producto = { nombre, precio, imageUrl, promocion };
                 break;
             }
         }
+
+        if (!producto) {
+            console.log("❌ Producto no encontrado.");
+            return res.status(404).json({ message: "Producto no encontrado" });
+        }
+
+        console.log("✅ Producto encontrado:", producto);
+
+        res.json({
+            message: `✅ Producto encontrado: ${producto.nombre}`,
+            promotion: producto.promocion,
+            imageUrl: producto.imageUrl,
+            price: producto.precio,
+            productName: producto.nombre
+        });
+
+    } catch (error) {
+        console.error("⚠️ Error en el servidor:", error);
+        res.status(500).json({ message: "Error en el servidor. Intenta de nuevo." });
+    }
+});
+
 
         if (!producto) {
             console.log("❌ Producto no encontrado.");
