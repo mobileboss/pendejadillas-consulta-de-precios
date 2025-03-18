@@ -98,7 +98,7 @@ app.post("/get-price", async (req, res) => {
         }
         
         console.log("✅ Producto encontrado:", producto);
-        console.log("📤 Enviando respuesta al cliente:", {
+console.log("📤 Enviando respuesta al cliente:", {
     message: `✅ Producto encontrado: ${producto.nombre}`,
     productName: producto.nombre,
     price: producto.precio,
@@ -106,11 +106,20 @@ app.post("/get-price", async (req, res) => {
     promotion: producto.promocion || "Sin promoción",
 });
 
+// ✅ SE AGREGA `res.json(...)` PARA ENVIAR LA RESPUESTA ANTES DEL `catch`
+res.json({
+    message: `✅ Producto encontrado: ${producto.nombre}`,
+    productName: producto.nombre,
+    price: producto.precio,
+    imageUrl: producto.imageUrl,
+    promotion: producto.promocion || "Sin promoción",
+});
 
-    } catch (error) {
-        console.error("❌ Error en /get-price:", error);
-        res.status(500).json({ message: "Error al obtener precio." });
-    }
+} catch (error) {
+    console.error("❌ Error en /get-price:", error);
+    res.status(500).json({ message: "Error al obtener precio." });
+}
+
 });
 
 // Ruta principal que devuelve index.html (frontend)
