@@ -96,19 +96,28 @@ app.post("/get-price", async (req, res) => {
             }
         }
 
+        // **Si no se encontró el producto, devolver error 404**
         if (!producto) {
             console.log("❌ Producto no encontrado.");
             return res.status(404).json({ message: "Producto no encontrado" });
         }
 
         console.log("✅ Producto encontrado:", producto);
+        console.log("📤 Enviando respuesta al cliente:", {
+            message: `✅ Producto encontrado: ${producto.nombre}`,
+            productName: producto.nombre,
+            price: producto.precio,
+            imageUrl: producto.imageUrl,
+            promotion: producto.promocion || "Sin promoción",
+        });
 
+        // **Enviar respuesta correcta al cliente**
         res.json({
             message: `✅ Producto encontrado: ${producto.nombre}`,
-            promotion: producto.promocion,
-            imageUrl: producto.imageUrl,
+            productName: producto.nombre,
             price: producto.precio,
-            productName: producto.nombre
+            imageUrl: producto.imageUrl,
+            promotion: producto.promocion || "Sin promoción",
         });
 
     } catch (error) {
@@ -117,29 +126,7 @@ app.post("/get-price", async (req, res) => {
     }
 });
 
-
-        if (!producto) {
-            console.log("❌ Producto no encontrado.");
-            return res.status(404).json({ message: "Producto no encontrado" });
-        }
-        
-        console.log("✅ Producto encontrado:", producto);
-        console.log("📤 Enviando respuesta al cliente:", {
-    message: `✅ Producto encontrado: ${producto.nombre}`,
-    productName: producto.nombre,
-    price: producto.precio,
-    imageUrl: producto.imageUrl,
-    promotion: producto.promocion || "Sin promoción",
-});
-
-
-    } catch (error) {
-        console.error("❌ Error en /get-price:", error);
-        res.status(500).json({ message: "Error al obtener precio." });
-    }
-});
-
-// Ruta principal que devuelve index.html (frontend)
+// 🔥 **Ruta principal que devuelve index.html (frontend)**
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
