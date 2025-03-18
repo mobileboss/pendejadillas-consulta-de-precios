@@ -126,6 +126,27 @@ res.json({
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
+// 🔥 **Endpoint para registrar una venta**
+app.post("/register-sale", async (req, res) => {
+    try {
+        console.log("📩 Datos recibidos en /register-sale:", req.body);
+
+        // Verificar que haya productos en la venta
+        if (!req.body.items || req.body.items.length === 0) {
+            return res.status(400).json({ message: "⚠️ No hay productos en la venta." });
+        }
+
+        // Lógica para guardar la venta en Google Sheets o base de datos...
+        // Si usas Google Sheets, aquí agregamos la fila con los datos.
+
+        console.log("✅ Venta registrada correctamente.");
+        res.json({ message: "✅ Venta registrada con éxito." });
+
+    } catch (error) {
+        console.error("❌ Error en /register-sale:", error);
+        res.status(500).json({ message: "Error al registrar la venta." });
+    }
+});
 
 app.listen(port, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${port}`);
