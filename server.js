@@ -53,6 +53,7 @@ app.post("/get-price", async (req, res) => {
         if (!productName && !productCode) {
             return res.status(400).json({ message: "Debes proporcionar el nombre o el código del producto." });
         }
+         console.log(`🔎 Buscando producto con código: ${productCode}`);
 
         const authClient = await authenticate();
         const sheets = google.sheets({ version: "v4", auth: authClient });
