@@ -96,7 +96,7 @@ app.post("/get-price", async (req, res) => {
             console.log("❌ Producto no encontrado.");
             return res.status(404).json({ message: "Producto no encontrado" });
         }
-        console.log("📤 Enviando respuesta al cliente:",
+        
         console.log("✅ Producto encontrado:", producto);
         res.json({
             message: `✅ Producto encontrado: ${producto.nombre}`,
