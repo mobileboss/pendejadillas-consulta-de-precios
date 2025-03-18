@@ -98,13 +98,14 @@ app.post("/get-price", async (req, res) => {
         }
         
         console.log("✅ Producto encontrado:", producto);
-        res.json({
-            message: `✅ Producto encontrado: ${producto.nombre}`,
-            productName: producto.nombre,
-            price: producto.precio,
-            imageUrl: producto.imageUrl,
-            promotion: producto.promocion || "Sin promoción",
-        });
+        console.log("📤 Enviando respuesta al cliente:", {
+    message: `✅ Producto encontrado: ${producto.nombre}`,
+    productName: producto.nombre,
+    price: producto.precio,
+    imageUrl: producto.imageUrl,
+    promotion: producto.promocion || "Sin promoción",
+});
+
 
     } catch (error) {
         console.error("❌ Error en /get-price:", error);
