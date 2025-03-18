@@ -60,7 +60,7 @@ app.post("/get-price", async (req, res) => {
 
         const { data } = await sheets.spreadsheets.values.get({
             spreadsheetId: SPREADSHEET_ID,
-            range: "Productos!A2:F",
+            range: "Productos!A2:H",
         });
 
         const rows = data.values || [];
