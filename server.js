@@ -59,9 +59,10 @@ app.post("/get-price", async (req, res) => {
         const sheets = google.sheets({ version: "v4", auth: authClient });
 
         const { data } = await sheets.spreadsheets.values.get({
-            spreadsheetId: SPREADSHEET_ID,
-            range: "Productos!A2:H",
-        });
+    spreadsheetId: SPREADSHEET_ID,
+    range: "Productos!A2:H", // Cambiar "A2:F" por "A2:H" para incluir la columna del código de barras
+});
+
 
         const rows = data.values || [];
         let producto = null;
