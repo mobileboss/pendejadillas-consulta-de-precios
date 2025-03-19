@@ -129,7 +129,7 @@ app.get("/", (req, res) => {
 // 🔥 **Endpoint para registrar una venta**
 app.post("/register-sale", async (req, res) => {
     try {
-        console.log("📩 Datos recibidos en /register-sale:", req.body);
+        console.log("📩 Datos recibidos en /register-sale:", JSON.stringify(req.body, null, 2));
 
         // Verificar que haya productos en la venta
         if (!req.body.items || req.body.items.length === 0) {
