@@ -127,6 +127,7 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 // 🔥 **Endpoint para registrar una venta**
+// 🔥 **Endpoint para registrar una venta**
 app.post("/register-sale", async (req, res) => {
     try {
         console.log("📩 Datos recibidos en /register-sale:", JSON.stringify(req.body, null, 2));
@@ -136,15 +137,40 @@ app.post("/register-sale", async (req, res) => {
             return res.status(400).json({ message: "⚠️ No hay productos en la venta." });
         }
 
-        // Lógica para guardar la venta en Google Sheets o base de datos...
-        // Si usas Google Sheets, aquí agregamos la fila con los datos.
+        // 🔹 **Autenticación con Google Sheets**
+        const authClient = await authenticate();
+        const sheets = google.sheets({ version: "v4", auth: authClient });
 
-        console.log("✅ Venta registrada correctamente.");
-        res.json({ message: "✅ Venta registrada con éxito." });
+        // Crear los valores que se insertarán en Google Sheets
+        const values = req.body.items.map(item => [
+            new Date().toLocaleString(), // Fecha y hora
+            req.body.vendedorId,        // Vendedor
+            req.body.locationId,        // Ubicación
+            item.productName,           // Producto
+            item.quantity,              // Cantidad
+            item.price,                 // Precio Unitario
+            item.quantity * item.price  // Total
+        ]);
+
+        // 🔍 **Verificar los datos antes de insertarlos en Google Sheets**
+        console.log("📤 Intentando registrar en Google Sheets:", values);
+
+        // **Insertar en Google Sheets**
+        const response = await sheets.spreadsheets.values.append({
+            spreadsheetId: SPREADSHEET_ID,
+            range: "Ventas!A2:G", // **Debe coincidir con la estructura de la hoja**
+            valueInputOption: "RAW",
+            insertDataOption: "INSERT_ROWS",
+            resource: { values }
+        });
+
+        console.log("✅ Venta registrada en Google Sheets:", response.data);
+
+        res.json({ message: "✅ Venta registrada con éxito en Google Sheets." });
 
     } catch (error) {
         console.error("❌ Error en /register-sale:", error);
-        res.status(500).json({ message: "Error al registrar la venta." });
+        res.status(500).json({ message: "Error al registrar la venta en Google Sheets." });
     }
 });
 
